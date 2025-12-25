@@ -102,7 +102,7 @@ function submitOperation() {
                 </td>
 
                 <td class="p-2 text-center">
-                    <button class="text-red-600" v-if="rows.length > 1" @click="removeRow(row.id)">
+                    <button class="text-red-600 cursor-pointer hover:scale-180 transition" v-if="rows.length > 1" @click="removeRow(row.id)">
                         ✖
                     </button>
                 </td>
@@ -112,14 +112,14 @@ function submitOperation() {
 
     <!-- Додати позицію -->
     <div class="flex justify-center">
-        <button class="bg-blue-500 text-white py-1 px-4 rounded mt-5" @click="addRow">
+        <button class="bg-blue-500 text-white py-1 px-4 rounded mt-5 hover:bg-blue-600 cursor-pointer transition" @click="addRow">
             Додати позицію
         </button>
     </div>
 
     <!-- Виконати -->
     <div class="flex justify-end mt-6">
-        <button class="bg-green-500 text-white py-2 px-6 rounded" @click="submitOperation">
+        <button class="bg-green-500 text-white py-2 px-6 rounded hover:bg-green-600 cursor-pointer transition" @click="submitOperation">
             Виконати операцію
         </button>
     </div>

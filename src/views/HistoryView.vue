@@ -105,17 +105,17 @@ const filteredHistory = computed(() => {
         <!-- Пошук -->
         <div class="mb-4 flex gap-2 justify-between">
             <div class="space-x-4">
-                <button class="bg-blue-400 text-white px-6 py-1 rounded"
+                <button class="bg-blue-400 text-white px-6 py-1 rounded cursor-pointer hover:bg-blue-500 transition"
                     :class="typeActive === 'all' ? 'bg-blue-600' : ''" @click="typeActive = 'all'">
                     Все
                 </button>
 
-                <button class="bg-blue-400 text-white px-6 py-1 rounded"
+                <button class="bg-blue-400 text-white px-6 py-1 rounded cursor-pointer hover:bg-blue-500 transition"
                     :class="typeActive === 'income' ? 'bg-blue-600' : ''" @click="typeActive = 'income'">
                     Приходи
                 </button>
 
-                <button class="bg-blue-400 text-white px-6 py-1 rounded"
+                <button class="bg-blue-400 text-white px-6 py-1 rounded cursor-pointer hover:bg-blue-500 transition"
                     :class="typeActive === 'sale' ? 'bg-blue-600' : ''" @click="typeActive = 'sale'">
                     Продажі
                 </button>
@@ -125,7 +125,7 @@ const filteredHistory = computed(() => {
                 <span>—</span>
                 <input type="date" v-model="dateTo" class="border px-2 py-1 rounded" />
             </div>
-            <input v-model="search" type="text" placeholder="Пошук..." class="border px-2 py-1 rounded w-124" />
+            <input v-model="search" type="text" placeholder="Пошук(назва або код)..." class="border px-2 py-1 rounded w-124" />
         </div>
 
         <div>

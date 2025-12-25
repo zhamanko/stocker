@@ -141,12 +141,12 @@ function deleteProduct(id: number) {
 
         <div class="mb-4 flex gap-2 justify-between">
             <div>
-                <button class="bg-green-600 text-white px-4 py-2 rounded" @click="openAddModal">
+                <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer transition" @click="openAddModal">
                     Додати товар
                 </button>
 
             </div>
-            <input v-model="search" type="text" placeholder="Пошук товарів..." class="border px-2 py-1 rounded w-1/4" />
+            <input v-model="search" type="text" placeholder="Пошук товарів(назва або код)..." class="border px-2 py-1 rounded w-1/4" />
         </div>
 
         <table class="w-full border-collapse">
@@ -223,11 +223,11 @@ function deleteProduct(id: number) {
                     <td class="td">{{ p.price }} ₴</td>
                     <td class="td w-57">
                         <div class="flex gap-2 items-center">
-                            <button class="w-full bg-blue-600 text-white px-2 py-1 rounded" @click="openEditModal(p)">
+                            <button class="w-full bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 cursor-pointer transition" @click="openEditModal(p)">
                                 Редагувати
                             </button>
 
-                            <button class="w-full bg-red-600 text-white px-2 py-1 rounded" @click="deleteProduct(p.id)">
+                            <button class="w-full bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 cursor-pointer transition" @click="deleteProduct(p.id)">
                                 Видалити
                             </button>
 
@@ -272,10 +272,10 @@ function deleteProduct(id: number) {
             </div>
 
             <div class="flex justify-end gap-3">
-                <button class="px-4 py-2 rounded border" @click="closeModal">
+                <button class="px-4 py-2 rounded border hover:bg-gray-100 cursor-pointer transition" @click="closeModal">
                     Скасувати
                 </button>
-                <button class="px-4 py-2 rounded bg-green-600 text-white" @click="saveProduct">
+                <button class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 cursor-pointer transition" @click="saveProduct">
                     Зберегти
                 </button>
             </div>
@@ -291,6 +291,7 @@ function deleteProduct(id: number) {
     border: 1px solid #ccc;
     user-select: none;
     white-space: nowrap;
+        cursor: pointer;
 }
 
 .td {
