@@ -77,7 +77,7 @@ function startResize(e: PointerEvent, th: HTMLElement) {
 
 <template>
     <div>
-        <h1 class="text-xl font-bold mb-4">Товари</h1>
+        <h1 class="text-2xl font-bold mb-4">Товари</h1>
 
         <div class="mb-4 flex gap-2">
             <input v-model="search" type="text" placeholder="Пошук товарів..." class="border px-2 py-1 rounded w-64" />
@@ -91,31 +91,56 @@ function startResize(e: PointerEvent, th: HTMLElement) {
                     <th class="th" @click="sortBy('code')">
                         Код товару
                         <span>⇅</span>
-                        <div class="resizer" @pointerdown="(e) => startResize(e, e.currentTarget.parentElement as HTMLElement)"></div>
+                        <div class="resizer" @pointerdown="(e) => {
+                            if (e.currentTarget) {
+                                const target = e.currentTarget as HTMLElement;
+                                startResize(e, target.parentElement as HTMLElement);
+                            }
+                        }"></div>
                     </th>
 
                     <th class="th" @click="sortBy('name')">
                         Назва
                         <span>⇅</span>
-                        <div class="resizer" @pointerdown="(e) => startResize(e, e.currentTarget.parentElement as HTMLElement)"></div>
+                        <div class="resizer" @pointerdown="(e) => {
+                            if (e.currentTarget) {
+                                const target = e.currentTarget as HTMLElement;
+                                startResize(e, target.parentElement as HTMLElement);
+                            }
+                        }"></div>
                     </th>
 
-                    <th class="th" @click="sortBy('quantity')">
+                    <th class="th w-45" @click="sortBy('quantity')">
                         Кількість
                         <span>⇅</span>
-                        <div class="resizer" @pointerdown="(e) => startResize(e, e.currentTarget.parentElement as HTMLElement)"></div>
+                                                <div class="resizer" @pointerdown="(e) => {
+                            if (e.currentTarget) {
+                                const target = e.currentTarget as HTMLElement;
+                                startResize(e, target.parentElement as HTMLElement);
+                            }
+                        }"></div>
                     </th>
 
                     <th class="th" @click="sortBy('category')">
                         Категорія
                         <span>⇅</span>
-                        <div class="resizer" @pointerdown="(e) => startResize(e, e.currentTarget.parentElement as HTMLElement)"></div>
+                                                <div class="resizer" @pointerdown="(e) => {
+                            if (e.currentTarget) {
+                                const target = e.currentTarget as HTMLElement;
+                                startResize(e, target.parentElement as HTMLElement);
+                            }
+                        }"></div>
                     </th>
 
-                    <th class="th" @click="sortBy('price')">
+                    <th class="th w-30" @click="sortBy('price')">
                         Ціна
                         <span>⇅</span>
-                        <div class="resizer" @pointerdown="(e) => startResize(e, e.currentTarget.parentElement as HTMLElement)"></div>
+                                                <div class="resizer" @pointerdown="(e) => {
+                            if (e.currentTarget) {
+                                const target = e.currentTarget as HTMLElement;
+                                startResize(e, target.parentElement as HTMLElement);
+                            }
+                        }"></div>
                     </th>
 
                     <th class="th">Дії</th>

@@ -4,8 +4,9 @@
         <div>
             <nav class="text-white flex gap-12">
                 <router-link to="/products">Товари</router-link>
-                <router-link to="/income">Прихід</router-link>
-                <router-link to="/sale">Продаж</router-link>
+                <!-- <router-link to="/income">Прихід</router-link>
+                <router-link to="/sale">Продаж</router-link> -->
+                <router-link to="/operation">Операції</router-link>
                 <router-link to="/history">Історія</router-link>
             </nav>
         </div>
