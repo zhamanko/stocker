@@ -10,6 +10,18 @@ type Product = {
     price: number
 }
 
+const isModalOpen = ref(false)
+const editId = ref<number | null>(null)
+
+const form = ref<Omit<Product, 'id'>>({
+    code: '',
+    name: '',
+    quantity: 0,
+    category: '',
+    price: 0
+})
+
+
 /* 🔹 Мокові дані */
 const products = ref<Product[]>([
     { id: 1, code: 'A001', name: 'Монітор', quantity: 10, category: 'Техніка', price: 4500 },
@@ -56,20 +68,68 @@ const filteredProducts = computed(() => {
 
 /* 🔹 Resize колонок */
 function startResize(e: PointerEvent, th: HTMLElement) {
-  const startX = e.clientX
-  const startWidth = th.offsetWidth
+    const startX = e.clientX
+    const startWidth = th.offsetWidth
 
-  const onMove = (ev: PointerEvent) => {
-    th.style.width = startWidth + (ev.clientX - startX) + 'px'
-  }
+    const onMove = (ev: PointerEvent) => {
+        th.style.width = startWidth + (ev.clientX - startX) + 'px'
+    }
 
-  const onUp = () => {
-    document.removeEventListener('pointermove', onMove)
-    document.removeEventListener('pointerup', onUp)
-  }
+    const onUp = () => {
+        document.removeEventListener('pointermove', onMove)
+        document.removeEventListener('pointerup', onUp)
+    }
 
-  document.addEventListener('pointermove', onMove)
-  document.addEventListener('pointerup', onUp)
+    document.addEventListener('pointermove', onMove)
+    document.addEventListener('pointerup', onUp)
+}
+
+function openAddModal() {
+    editId.value = null
+    form.value = {
+        code: '',
+        name: '',
+        quantity: 0,
+        category: '',
+        price: 0
+    }
+    isModalOpen.value = true
+}
+
+function openEditModal(product: Product) {
+    editId.value = product.id
+    form.value = { ...product }
+    isModalOpen.value = true
+}
+
+function closeModal() {
+    isModalOpen.value = false
+}
+
+function saveProduct() {
+    if (!form.value.code || !form.value.name) return
+
+    if (editId.value === null) {
+        products.value.push({
+            id: Date.now(),
+            ...form.value
+        })
+    } else {
+        const index = products.value.findIndex(p => p.id === editId.value)
+        if (index !== -1) {
+            products.value[index] = {
+                id: editId.value,
+                ...form.value
+            }
+        }
+    }
+
+    closeModal()
+}
+
+function deleteProduct(id: number) {
+    if (!confirm('Видалити товар?')) return
+    products.value = products.value.filter(p => p.id !== id)
 }
 
 
@@ -79,8 +139,14 @@ function startResize(e: PointerEvent, th: HTMLElement) {
     <div>
         <h1 class="text-2xl font-bold mb-4">Товари</h1>
 
-        <div class="mb-4 flex gap-2">
-            <input v-model="search" type="text" placeholder="Пошук товарів..." class="border px-2 py-1 rounded w-64" />
+        <div class="mb-4 flex gap-2 justify-between">
+            <div>
+                <button class="bg-green-600 text-white px-4 py-2 rounded" @click="openAddModal">
+                    Додати товар
+                </button>
+
+            </div>
+            <input v-model="search" type="text" placeholder="Пошук товарів..." class="border px-2 py-1 rounded w-1/4" />
         </div>
 
         <table class="w-full border-collapse">
@@ -113,7 +179,7 @@ function startResize(e: PointerEvent, th: HTMLElement) {
                     <th class="th w-45" @click="sortBy('quantity')">
                         Кількість
                         <span>⇅</span>
-                                                <div class="resizer" @pointerdown="(e) => {
+                        <div class="resizer" @pointerdown="(e) => {
                             if (e.currentTarget) {
                                 const target = e.currentTarget as HTMLElement;
                                 startResize(e, target.parentElement as HTMLElement);
@@ -124,7 +190,7 @@ function startResize(e: PointerEvent, th: HTMLElement) {
                     <th class="th" @click="sortBy('category')">
                         Категорія
                         <span>⇅</span>
-                                                <div class="resizer" @pointerdown="(e) => {
+                        <div class="resizer" @pointerdown="(e) => {
                             if (e.currentTarget) {
                                 const target = e.currentTarget as HTMLElement;
                                 startResize(e, target.parentElement as HTMLElement);
@@ -135,7 +201,7 @@ function startResize(e: PointerEvent, th: HTMLElement) {
                     <th class="th w-30" @click="sortBy('price')">
                         Ціна
                         <span>⇅</span>
-                                                <div class="resizer" @pointerdown="(e) => {
+                        <div class="resizer" @pointerdown="(e) => {
                             if (e.currentTarget) {
                                 const target = e.currentTarget as HTMLElement;
                                 startResize(e, target.parentElement as HTMLElement);
@@ -157,14 +223,65 @@ function startResize(e: PointerEvent, th: HTMLElement) {
                     <td class="td">{{ p.price }} ₴</td>
                     <td class="td w-57">
                         <div class="flex gap-2 items-center">
-                            <button class="w-full bg-blue-600 text-white px-2 py-1 rounded">Редагувати</button>
-                            <button class="w-full bg-red-600 text-white px-2 py-1 rounded">Видалити</button>
+                            <button class="w-full bg-blue-600 text-white px-2 py-1 rounded" @click="openEditModal(p)">
+                                Редагувати
+                            </button>
+
+                            <button class="w-full bg-red-600 text-white px-2 py-1 rounded" @click="deleteProduct(p.id)">
+                                Видалити
+                            </button>
+
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+    <div v-if="isModalOpen" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 ">
+            <h1 class="text-2xl font-bold mb-4">
+                {{ editId ? 'Редагувати товар' : 'Додати товар' }}
+            </h1>
+
+            <div class="flex gap-4 mb-6">
+                <div class="flex flex-col">
+                    <label>Код товару:</label>
+                    <input v-model="form.code" class="border border-solid-black py-1 px-2 rounded" />
+                </div>
+
+                <div class="flex flex-col">
+                    <label>Назва:</label>
+                    <input v-model="form.name" class="border border-solid-black py-1 px-2 rounded" />
+                </div>
+
+                <div class="flex flex-col">
+                    <label>Кількість:</label>
+                    <input v-model.number="form.quantity" type="number" class="border border-solid-black py-1 px-2 rounded" />
+                </div>
+
+                <div class="flex flex-col">
+                    <label>Категорія:</label>
+                    <input v-model="form.category" class="border border-solid-black py-1 px-2 rounded" />
+                </div>
+
+                <div class="flex flex-col">
+                    <label>Ціна:</label>
+                    <input v-model.number="form.price" type="number" class="border border-solid-black py-1 px-2 rounded" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button class="px-4 py-2 rounded border" @click="closeModal">
+                    Скасувати
+                </button>
+                <button class="px-4 py-2 rounded bg-green-600 text-white" @click="saveProduct">
+                    Зберегти
+                </button>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <style scoped>
@@ -182,12 +299,12 @@ function startResize(e: PointerEvent, th: HTMLElement) {
 }
 
 .resizer {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 6px;
-  height: 100%;
-  cursor: col-resize;
-  touch-action: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    cursor: col-resize;
+    touch-action: none;
 }
 </style>
