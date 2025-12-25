@@ -152,7 +152,7 @@ function deleteProduct(id: number) {
         <table class="w-full border-collapse">
             <thead>
                 <tr class="bg-gray-200">
-                    <th class="th">№</th>
+                    <th class="th rounded-tl-xl">№</th>
 
                     <th class="th" @click="sortBy('code')">
                         Код товару
@@ -209,7 +209,7 @@ function deleteProduct(id: number) {
                         }"></div>
                     </th>
 
-                    <th class="th">Дії</th>
+                    <th class="th rounded-tr-xl">Дії</th>
                 </tr>
             </thead>
 
