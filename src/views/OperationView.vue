@@ -13,6 +13,7 @@ type OperationRow = {
     id: number
     product: ProductOption | null
     quantity: number | null
+    price: number | null
 }
 
 const products: ProductOption[] = [
@@ -24,14 +25,15 @@ const products: ProductOption[] = [
 const operationType = ref<'income' | 'sale'>('income')
 
 const rows = ref<OperationRow[]>([
-    { id: 1, product: null, quantity: null }
+    { id: 1, product: null, quantity: null, price: null }
 ])
 
 function addRow() {
     rows.value.push({
         id: Date.now(),
         product: null,
-        quantity: null
+        quantity: null,
+        price: null
     })
 }
 
@@ -83,6 +85,7 @@ function submitOperation() {
                 <th class="py-3 rounded-tl-xl w-12">№</th>
                 <th class="py-3">Товар</th>
                 <th class="py-3 w-32">Кількість</th>
+                <th class="py-3 w-32">Ціна за один.</th>
                 <th class="py-3 rounded-tr-xl w-16"></th>
             </tr>
         </thead>
@@ -100,6 +103,11 @@ function submitOperation() {
                     <input v-model.number="row.quantity" type="number" min="1"
                         class="border border-solid-black rounded px-1 py-2 w-full" />
                 </td>
+
+                <th>
+                    <input v-model.number="row.price" type="number" min="0" step="0.01"
+                        class="border border-solid-black rounded px-1 py-2 w-full" />
+                </th>
 
                 <td class="p-2 text-center">
                     <button class="text-red-600 cursor-pointer hover:scale-180 transition" v-if="rows.length > 1" @click="removeRow(row.id)">

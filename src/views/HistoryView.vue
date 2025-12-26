@@ -8,8 +8,9 @@ type HistoryItem = {
     products: {
         code: string
         name: string
+        category: string
         quantity: number
-        price: number
+        price_unit: number
     }[],
     comentary: string | null
 }
@@ -33,8 +34,8 @@ const history = ref<HistoryItem[]>([
         date: '12.12.2025',
         type: 'sale',
         products: [
-            { code: 'A001', name: 'Монітор', quantity: 4, price: 4500 },
-            { code: 'B002', name: 'Клавіатура', quantity: 1, price: 900 }
+            { code: 'A001', name: 'Монітор', category: 'Електроніка', quantity: 4, price_unit: 20 },
+            { code: 'B002', name: 'Клавіатура', category: 'Електроніка', quantity: 1, price_unit: 10 }
         ],
         comentary: 'Термінова доставка'
     },
@@ -43,7 +44,7 @@ const history = ref<HistoryItem[]>([
         date: '12.12.2025',
         type: 'income',
         products: [
-            { code: 'C003', name: 'Миша', quantity: 5, price: 500 }
+            { code: 'C003', name: 'Миша', category: 'Електроніка', quantity: 5, price_unit: 5 }
         ],
         comentary: null
     },
@@ -52,7 +53,7 @@ const history = ref<HistoryItem[]>([
         date: '11.12.2025',
         type: 'sale',
         products: [
-            { code: 'B002', name: 'Клавіатура', quantity: 2, price: 900 }
+            { code: 'B002', name: 'Клавіатура', category: 'Електроніка', quantity: 2, price_unit: 10 }
         ],
         comentary: 'Клієнт забрав самовивозом'
     }
@@ -125,7 +126,8 @@ const filteredHistory = computed(() => {
                 <span>—</span>
                 <input type="date" v-model="dateTo" class="border px-2 py-1 rounded" />
             </div>
-            <input v-model="search" type="text" placeholder="Пошук(назва або код)..." class="border px-2 py-1 rounded w-124" />
+            <input v-model="search" type="text" placeholder="Пошук(назва або код)..."
+                class="border px-2 py-1 rounded w-124" />
         </div>
 
         <div>
@@ -133,10 +135,10 @@ const filteredHistory = computed(() => {
                 <div v-for="check in filteredHistory" :key="check.id" class="rounded-2xl p-4 shadow"
                     :class="check.type === 'income' ? 'bg-blue-100' : 'bg-green-100'">
                     <div class="flex justify-between mb-2">
-                        <h2 class="font-bold">
+                        <h2 class="font-bold text-xl">
                             {{ check.type === 'income' ? 'Прихід' : 'Продаж' }}
                         </h2>
-                        <span class="text-sm">{{ check.date }}</span>
+                        <span>{{ check.date }}</span>
                     </div>
 
                     <table class="w-full border-collapse mb-2">
@@ -144,16 +146,20 @@ const filteredHistory = computed(() => {
                             <tr>
                                 <th class="border px-2 py-1">Код</th>
                                 <th class="border px-2 py-1">Назва</th>
-                                <th class="border px-2 py-1">Кількість</th>
-                                <th class="border px-2 py-1">Ціна</th>
+                                <th class="border px-2 py-1">Категорія</th>
+                                <th class="border px-2 py-1 w-32">Кількість</th>
+                                <th class="border px-2 py-1 w-32">Ціна за один.</th>
+                                <th class="border px-2 py-1 w-32">Разом</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="prod in check.products" :key="prod.code">
                                 <td class="border px-2 py-1">{{ prod.code }}</td>
                                 <td class="border px-2 py-1">{{ prod.name }}</td>
+                                <td class="border px-2 py-1">{{ prod.category || '—' }}</td>
                                 <td class="border px-2 py-1">{{ prod.quantity }}</td>
-                                <td class="border px-2 py-1">{{ prod.price }} ₴</td>
+                                <td class="border px-2 py-1">{{ prod.price_unit }} $</td>
+                                <td class="border px-2 py-1">{{ prod.quantity * prod.price_unit }} $</td>
                             </tr>
                         </tbody>
                     </table>
@@ -163,7 +169,7 @@ const filteredHistory = computed(() => {
                     </div>
 
                     <div class="text-right font-bold">
-                        Разом: {{check.products.reduce((sum, p) => sum + p.quantity * p.price, 0)}} ₴
+                        Разом: {{ check.products.reduce((sum, p) => sum + p.quantity * p.price_unit, 0) }} $
                     </div>
                 </div>
             </div>

@@ -24,9 +24,9 @@ const form = ref<Omit<Product, 'id'>>({
 
 /* 🔹 Мокові дані */
 const products = ref<Product[]>([
-    { id: 1, code: 'A001', name: 'Монітор', quantity: 10, category: 'Техніка', price: 4500 },
-    { id: 2, code: 'B002', name: 'Клавіатура', quantity: 25, category: 'Аксесуари', price: 900 },
-    { id: 3, code: 'C003', name: 'Миша', quantity: 40, category: 'Аксесуари', price: 500 }
+    { id: 1, code: 'A001', name: 'Монітор', quantity: 10, category: 'Техніка', price: 20 },
+    { id: 2, code: 'B002', name: 'Клавіатура', quantity: 25, category: 'Аксесуари', price: 10 },
+    { id: 3, code: 'C003', name: 'Миша', quantity: 40, category: 'Аксесуари', price: 20 }
 ])
 
 /* 🔹 Пошук */
@@ -49,7 +49,8 @@ function sortBy(key: keyof Product) {
 const filteredProducts = computed(() => {
     let data = products.value.filter(p =>
         p.name.toLowerCase().includes(search.value.toLowerCase()) ||
-        p.code.toLowerCase().includes(search.value.toLowerCase())
+        p.code.toLowerCase().includes(search.value.toLowerCase()) ||
+        p.category.toLowerCase().includes(search.value.toLowerCase())
     )
 
     if (sortKey.value) {
@@ -141,18 +142,29 @@ function deleteProduct(id: number) {
 
         <div class="mb-4 flex gap-2 justify-between">
             <div>
-                <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer transition" @click="openAddModal">
+                <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer transition"
+                    @click="openAddModal">
                     Додати товар
                 </button>
 
             </div>
-            <input v-model="search" type="text" placeholder="Пошук товарів(назва або код)..." class="border px-2 py-1 rounded w-1/4" />
+            <input v-model="search" type="text" placeholder="Пошук товарів(назва або код)..."
+                class="border px-2 py-1 rounded w-1/4" />
         </div>
 
         <table class="w-full border-collapse">
             <thead>
                 <tr class="bg-gray-200">
-                    <th class="th rounded-tl-xl">№</th>
+                    <th class="th rounded-tl-xl" @click="sortBy('id')">
+                        №
+                        <span>⇅</span>
+                        <div class="resizer" @pointerdown="(e) => {
+                            if (e.currentTarget) {
+                                const target = e.currentTarget as HTMLElement;
+                                startResize(e, target.parentElement as HTMLElement);
+                            }
+                        }"></div>
+                    </th>
 
                     <th class="th" @click="sortBy('code')">
                         Код товару
@@ -199,7 +211,7 @@ function deleteProduct(id: number) {
                     </th>
 
                     <th class="th w-30" @click="sortBy('price')">
-                        Ціна
+                        Ціна за один.
                         <span>⇅</span>
                         <div class="resizer" @pointerdown="(e) => {
                             if (e.currentTarget) {
@@ -215,19 +227,23 @@ function deleteProduct(id: number) {
 
             <tbody>
                 <tr v-for="(p, index) in filteredProducts" :key="p.id" class="border-b">
-                    <td class="td">{{ index + 1 }}</td>
+                    <td class="td">{{ p.id }}</td>
                     <td class="td">{{ p.code }}</td>
                     <td class="td">{{ p.name }}</td>
                     <td class="td">{{ p.quantity }}</td>
                     <td class="td">{{ p.category }}</td>
-                    <td class="td">{{ p.price }} ₴</td>
+                    <td class="td">{{ p.price }} $</td>
                     <td class="td w-57">
                         <div class="flex gap-2 items-center">
-                            <button class="w-full bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 cursor-pointer transition" @click="openEditModal(p)">
+                            <button
+                                class="w-full bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 cursor-pointer transition"
+                                @click="openEditModal(p)">
                                 Редагувати
                             </button>
 
-                            <button class="w-full bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 cursor-pointer transition" @click="deleteProduct(p.id)">
+                            <button
+                                class="w-full bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 cursor-pointer transition"
+                                @click="deleteProduct(p.id)">
                                 Видалити
                             </button>
 
@@ -257,7 +273,8 @@ function deleteProduct(id: number) {
 
                 <div class="flex flex-col">
                     <label>Кількість:</label>
-                    <input v-model.number="form.quantity" type="number" class="border border-solid-black py-1 px-2 rounded" />
+                    <input v-model.number="form.quantity" type="number"
+                        class="border border-solid-black py-1 px-2 rounded" />
                 </div>
 
                 <div class="flex flex-col">
@@ -266,16 +283,19 @@ function deleteProduct(id: number) {
                 </div>
 
                 <div class="flex flex-col">
-                    <label>Ціна:</label>
-                    <input v-model.number="form.price" type="number" class="border border-solid-black py-1 px-2 rounded" />
+                    <label>Ціна за один.:</label>
+                    <input v-model.number="form.price" type="number"
+                        class="border border-solid-black py-1 px-2 rounded" />
                 </div>
             </div>
 
             <div class="flex justify-end gap-3">
-                <button class="px-4 py-2 rounded border hover:bg-gray-100 cursor-pointer transition" @click="closeModal">
+                <button class="px-4 py-2 rounded border hover:bg-gray-100 cursor-pointer transition"
+                    @click="closeModal">
                     Скасувати
                 </button>
-                <button class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 cursor-pointer transition" @click="saveProduct">
+                <button class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 cursor-pointer transition"
+                    @click="saveProduct">
                     Зберегти
                 </button>
             </div>
@@ -291,7 +311,7 @@ function deleteProduct(id: number) {
     border: 1px solid #ccc;
     user-select: none;
     white-space: nowrap;
-        cursor: pointer;
+    cursor: pointer;
 }
 
 .td {
