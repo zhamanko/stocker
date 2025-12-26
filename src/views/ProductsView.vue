@@ -1,15 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { ProductService, Product } from './../services/product.service'
+import { f } from 'vue-router/dist/router-CWoNjPRp.mjs'
 
-type Product = {
-    id: number
-    code: string
-    name: string
-    quantity: number
-    category: string
-    price: number
-}
-
+const products = ref<Product[]>([])
 const isModalOpen = ref(false)
 const editId = ref<number | null>(null)
 
@@ -21,21 +15,18 @@ const form = ref<Omit<Product, 'id'>>({
     price: 0
 })
 
-
-/* 🔹 Мокові дані */
-const products = ref<Product[]>([
-    { id: 1, code: 'A001', name: 'Монітор', quantity: 10, category: 'Техніка', price: 20 },
-    { id: 2, code: 'B002', name: 'Клавіатура', quantity: 25, category: 'Аксесуари', price: 10 },
-    { id: 3, code: 'C003', name: 'Миша', quantity: 40, category: 'Аксесуари', price: 20 }
-])
-
-/* 🔹 Пошук */
 const search = ref('')
-
-/* 🔹 Сортування */
 const sortKey = ref<keyof Product | null>(null)
 const sortAsc = ref(true)
 
+// Завантаження продуктів з бази
+async function loadProducts() {
+    products.value = await ProductService.getAll()
+}
+
+onMounted(loadProducts)
+
+// Сортування
 function sortBy(key: keyof Product) {
     if (sortKey.value === key) {
         sortAsc.value = !sortAsc.value
@@ -45,7 +36,7 @@ function sortBy(key: keyof Product) {
     }
 }
 
-/* 🔹 Обчислені дані */
+// Фільтрація
 const filteredProducts = computed(() => {
     let data = products.value.filter(p =>
         p.name.toLowerCase().includes(search.value.toLowerCase()) ||
@@ -57,7 +48,7 @@ const filteredProducts = computed(() => {
         data = [...data].sort((a, b) => {
             const aVal = a[sortKey.value!]
             const bVal = b[sortKey.value!]
-
+            if (aVal === undefined || bVal === undefined) return 0
             if (aVal < bVal) return sortAsc.value ? -1 : 1
             if (aVal > bVal) return sortAsc.value ? 1 : -1
             return 0
@@ -67,7 +58,7 @@ const filteredProducts = computed(() => {
     return data
 })
 
-/* 🔹 Resize колонок */
+// Resize колонок
 function startResize(e: PointerEvent, th: HTMLElement) {
     const startX = e.clientX
     const startWidth = th.offsetWidth
@@ -85,6 +76,7 @@ function startResize(e: PointerEvent, th: HTMLElement) {
     document.addEventListener('pointerup', onUp)
 }
 
+// Модалка
 function openAddModal() {
     editId.value = null
     form.value = {
@@ -107,32 +99,26 @@ function closeModal() {
     isModalOpen.value = false
 }
 
-function saveProduct() {
+async function saveProduct() {
     if (!form.value.code || !form.value.name) return
 
     if (editId.value === null) {
-        products.value.push({
-            id: Date.now(),
-            ...form.value
-        })
+        const product: Product = { ...form.value, id: Date.now() }
+        console.log('Creating product', product)
+        await ProductService.create(product)
     } else {
-        const index = products.value.findIndex(p => p.id === editId.value)
-        if (index !== -1) {
-            products.value[index] = {
-                id: editId.value,
-                ...form.value
-            }
-        }
+        await ProductService.update({ id: editId.value, ...form.value })
     }
 
     closeModal()
+    await loadProducts()
 }
 
-function deleteProduct(id: number) {
+async function deleteProduct(id: number) {
     if (!confirm('Видалити товар?')) return
-    products.value = products.value.filter(p => p.id !== id)
+    await ProductService.delete(id)
+    await loadProducts()
 }
-
 
 </script>
 
@@ -226,7 +212,7 @@ function deleteProduct(id: number) {
             </thead>
 
             <tbody>
-                <tr v-for="(p, index) in filteredProducts" :key="p.id" class="border-b">
+                <tr v-for="(p) in filteredProducts" :key="p.id" class="border-b">
                     <td class="td">{{ p.id }}</td>
                     <td class="td">{{ p.code }}</td>
                     <td class="td">{{ p.name }}</td>

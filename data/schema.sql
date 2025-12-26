@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    category TEXT,
+    price REAL NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
